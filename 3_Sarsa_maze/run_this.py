@@ -1,17 +1,10 @@
-"""
-Sarsa is an online updating method for Reinforcement learning.
-
-Unlike Q learning which is an offline updating method, Sarsa is updating while in the current trajectory.
-
-You will see the sarsa is more coward when punishment is close because it cares about all behaviours,
-while q learning is more brave because it only cares about maximum behaviour.
-"""
-
 from maze_env import Maze
 from RL_brain import SarsaTable
 
-
 def update():
+    attempt_counter = 0  # Initialize the counter for attempts to find the optimal route
+    optimal_found = False
+
     for episode in range(100):
         # initial observation
         observation = env.reset()
@@ -29,7 +22,7 @@ def update():
             # RL choose action based on next observation
             action_ = RL.choose_action(str(observation_))
 
-            # RL learn from this transition (s, a, r, s, a) ==> Sarsa
+            # RL learn from this transition (s, a, r, s', a') ==> Sarsa
             RL.learn(str(observation), action, reward, str(observation_), action_)
 
             # swap observation and action
@@ -38,7 +31,16 @@ def update():
 
             # break while loop when end of this episode
             if done:
+                if reward == 1:  # Assuming a reward of 1 indicates reaching paradise, the optimal route
+                    optimal_found = True
                 break
+
+        attempt_counter += 1  # Increment the counter each episode
+
+        if optimal_found:
+            print(f'Optimal route found after {attempt_counter} attempts.')
+            attempt_counter = 0  # Reset the counter after finding optimal route
+            optimal_found = False  # Reset the flag for the next run
 
     # end of game
     print('game over')
