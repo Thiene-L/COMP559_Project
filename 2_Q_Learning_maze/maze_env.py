@@ -35,8 +35,8 @@ class Maze(tk.Tk, object):
 
     def _build_maze(self):
         self.canvas = tk.Canvas(self, bg='white',
-                                height=MAZE_H * UNIT,
-                                width=MAZE_W * UNIT)
+                           height=MAZE_H * UNIT,
+                           width=MAZE_W * UNIT)
 
         # create grids
         for c in range(0, MAZE_W * UNIT, UNIT):
@@ -46,18 +46,34 @@ class Maze(tk.Tk, object):
             x0, y0, x1, y1 = 0, r, MAZE_W * UNIT, r
             self.canvas.create_line(x0, y0, x1, y1)
 
-        # Adding visual nodes at the center of each cell
-        for i in range(MAZE_W):
-            for j in range(MAZE_H):
-                center_x, center_y = i * UNIT + UNIT // 2, j * UNIT + UNIT // 2
-                self.canvas.create_oval(
-                    center_x - 5, center_y - 5, center_x + 5, center_y + 5, fill='blue')
-
-        # Create origin
+        # create origin
         origin = np.array([20, 20])
 
-        # Create elements like hells and paradise as previously
-        # Your previous code for creating hells and paradise remains unchanged
+        # hell
+        hell1_center = origin + np.array([UNIT * 2, UNIT])
+        self.hell1 = self.canvas.create_rectangle(
+            hell1_center[0] - 15, hell1_center[1] - 15,
+            hell1_center[0] + 15, hell1_center[1] + 15,
+            fill='black')
+        # hell
+        hell2_center = origin + np.array([UNIT, UNIT * 2])
+        self.hell2 = self.canvas.create_rectangle(
+            hell2_center[0] - 15, hell2_center[1] - 15,
+            hell2_center[0] + 15, hell2_center[1] + 15,
+            fill='black')
+
+        # create oval
+        oval_center = origin + UNIT * 2
+        self.oval = self.canvas.create_oval(
+            oval_center[0] - 15, oval_center[1] - 15,
+            oval_center[0] + 15, oval_center[1] + 15,
+            fill='yellow')
+
+        # create red rect
+        self.rect = self.canvas.create_rectangle(
+            origin[0] - 15, origin[1] - 15,
+            origin[0] + 15, origin[1] + 15,
+            fill='red')
 
         # pack all
         self.canvas.pack()

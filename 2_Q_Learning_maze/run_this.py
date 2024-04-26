@@ -13,14 +13,15 @@ The RL is in RL_brain.py.
 from maze_env import Maze
 from RL_brain import QLearningTable
 
-
 def update():
     attempt_counter = 0  # Initialize the counter for attempts to find the optimal route
     optimal_found = False
+    steps_per_attempt = []  # List to store the number of steps for each successful attempt
 
     for episode in range(100):
         # initial observation
         observation = env.reset()
+        steps = 0  # Reset step counter for this attempt
 
         while True:
             # fresh env
@@ -38,10 +39,15 @@ def update():
             # swap observation
             observation = observation_
 
+            # Increment step counter
+            steps += 1
+
             # break while loop when end of this episode
             if done:
                 if reward == 1:  # Assuming reward of 1 is for reaching paradise which is the optimal route
                     optimal_found = True
+                    steps_per_attempt.append(steps)  # Record the number of steps for this successful attempt
+                    print(f'Successful route found with {steps} steps.')
                 break
 
         attempt_counter += 1  # Increment the counter each episode
@@ -51,10 +57,12 @@ def update():
             attempt_counter = 0  # Reset the counter after finding optimal route
             optimal_found = False  # Reset the flag for the next run
 
+    # Print all successful attempts with their step counts
+    print('Steps per successful attempt:', steps_per_attempt)
+
     # end of game
     print('game over')
     env.destroy()
-
 
 if __name__ == "__main__":
     env = Maze()
