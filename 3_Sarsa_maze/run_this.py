@@ -1,58 +1,53 @@
 from maze_env import Maze
 from RL_brain import SarsaTable
+import matplotlib.pyplot as plt
 
 def update():
-    attempt_counter = 0  # Initialize the counter for attempts to find the optimal route
-    steps_per_attempt = []  # List to store the number of steps for each successful attempt
-    optimal_found = False
+    attempt_counter = 0
+    success_counter = 0
+    steps_per_success = []
 
     for episode in range(100):
-        # initial observation
         observation = env.reset()
-        steps = 0  # Reset step counter for this attempt
-
-        # RL choose action based on observation
+        steps = 0
         action = RL.choose_action(str(observation))
 
         while True:
-            # fresh env
             env.render()
 
-            # RL take action and get next observation and reward
             observation_, reward, done = env.step(action)
-
-            # RL choose action based on next observation
             action_ = RL.choose_action(str(observation_))
 
-            # RL learn from this transition (s, a, r, s', a') ==> Sarsa
             RL.learn(str(observation), action, reward, str(observation_), action_)
 
-            # swap observation and action
             observation = observation_
             action = action_
 
-            # Increment step counter
             steps += 1
 
-            # break while loop when end of this episode
             if done:
-                if reward == 1:  # Assuming a reward of 1 is for reaching paradise, the optimal route
-                    optimal_found = True
-                    steps_per_attempt.append(steps)  # Record the number of steps for this successful attempt
+                attempt_counter += 1
+                if reward == 1:
+                    success_counter += 1
+                    steps_per_success.append(steps)
                     print(f'Successful route found with {steps} steps.')
                 break
 
-        attempt_counter += 1  # Increment the counter each episode
+        if success_counter == 20:
+            print(f'Optimal route found after {success_counter} successes.')
+            break
 
-        if optimal_found:
-            print(f'Optimal route found after {attempt_counter} attempts.')
-            attempt_counter = 0  # Reset the counter after finding optimal route
-            optimal_found = False  # Reset the flag for the next run
+    print('Steps per successful attempt:', steps_per_success)
+    print('Total number of attempts:', attempt_counter)
 
-    # Print all successful attempts with their step counts
-    print('Steps per successful attempt:', steps_per_attempt)
+    plt.figure(figsize=(10, 5))
+    plt.plot(steps_per_success, marker='o', linestyle='-')
+    plt.title('Steps per Successful Attempt')
+    plt.xlabel('Success Count')
+    plt.ylabel('Steps')
+    plt.grid(True)
+    plt.show()
 
-    # end of game
     print('game over')
     env.destroy()
 
